@@ -10,6 +10,8 @@ import '../api/apis.dart';
 import '../helper/dialogs.dart';
 import '../models/chat_user.dart';
 
+
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key, required this.user});
   static const String id = "profile_screen";
@@ -103,7 +105,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Positioned(
                           bottom: 0,
                           right: 0,
-                          child: MaterialButton(onPressed: (){},
+                          child: MaterialButton(onPressed: (){
+                            _showBottomSheet();
+                          },
                             elevation: 1,
                             color: Colors.white,
                             shape: CircleBorder(),
@@ -181,5 +185,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
       ),
     );
+  }
+  void _showBottomSheet() {
+    showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20),),
+        ),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 20,bottom: 20 ),
+              children: [
+                Text('Pick a Profile Picture',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,fontWeight: FontWeight.w500,
+                ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(onPressed: (){},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: CircleBorder(),
+                          fixedSize: Size(80, 80),
+                        ),
+                        child: Image.asset('images/adding.png')
+
+                    ),
+                    ElevatedButton(onPressed: (){},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: CircleBorder(),
+                          fixedSize: Size(80, 80),
+                        ),
+                        child: Image.asset('images/camera.png')
+
+                    )
+                  ],
+                ),
+              ],
+          );
+        });
   }
 }
