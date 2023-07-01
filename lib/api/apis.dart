@@ -6,8 +6,9 @@ class APIs {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  // for storing self info
+  static late ChatUser me;
   // return current user
-
   static User get authuser => auth.currentUser!;
 
   // for checking user exist or not
@@ -16,6 +17,20 @@ class APIs {
         .collection('users')
         .doc(authuser.uid)
         .get()).exists;
+  }
+
+  // for getting current user info
+  static Future<void> getSelfInfo() async {
+    return (await firestore
+        .collection('users')
+        .doc(authuser.uid)
+        .get().then((user) async {
+          if(user.exists){
+            me = ChatUser.fromJson(user.data()!);
+          }else {
+              await createUser().then((value) => getSelfInfo());
+            }
+    }));
   }
   
   // for creating a new users
@@ -27,6 +42,12 @@ class APIs {
    final chatUser = ChatUser(image: authuser.photoURL.toString(), about: 'Hey i am using Flash Chat', name: authuser.displayName.toString(), createdAt: time, isOnline: false, lastActive: time, id: authuser.uid, email: authuser.email.toString(), pushToken: '');
    
     return await firestore.collection('users').doc(authuser.uid).set(chatUser.toJson());
+  }
+
+
+  // getting all users from firestore database
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers(){
+   return firestore.collection('users').where('id',isNotEqualTo: authuser.uid).snapshots();
   }
 
 }

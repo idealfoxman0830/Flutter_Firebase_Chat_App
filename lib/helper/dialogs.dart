@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class Dialogs {
 
-  static void showSnackbar(BuildContext context) {
+  static void showSnackbar(BuildContext context,message) {
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text('Please! check your internet connection',
+      content:  Text(message,
       style: TextStyle(
         color: Colors.white,
       ),

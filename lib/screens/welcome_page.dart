@@ -70,7 +70,7 @@ class _WelcomePageState extends State<WelcomePage> {
       return await FirebaseAuth.instance.signInWithCredential(credential);
     }catch(e){
       // Dialogs.snackBar;
-      Dialogs.showSnackbar(context);
+      Dialogs.showSnackbar(context,'Please! check your internet connection');
     }
     return null;
   }

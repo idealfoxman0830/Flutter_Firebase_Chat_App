@@ -3,7 +3,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat_flutter_with_firebase/screens/welcome_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -47,19 +46,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.redAccent,
         onPressed: () async{
-           Dialogs.showSnackbar(context);
-          await APIs.auth.signOut().then((value) async{
-          await GoogleSignIn().signOut().then((value){
-            // for hiding progress dialog
-            Navigator.pop(context);
-            // for moving to home screen
-            Navigator.pop(context);
-
-            // replacing home screen with welcome screen
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> WelcomePage()));
-          });
-          });
-
+           Dialogs.showProgressBar(context);
+           await APIs.auth.signOut();
+           await GoogleSignIn().signOut();
+           Navigator.pop(context);
+          // await APIs.auth.signOut().then((value) async{
+          // await GoogleSignIn().signOut().then((value){
+          //   // for hiding progress dialog
+          //   Navigator.pop(context);
+          //   // for moving to home screen
+          //   Navigator.pop(context);
+          //
+          //   // replacing home screen with welcome screen
+          //  // Navigator.pushReplacementNamed(context, WelcomePage.id);
+          //
+          //  // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=> WelcomePage()));
+          // });
+          // });
+           Dialogs.showSnackbar(context,'Successfully Log-out');
             print('sign-out');
             Navigator.pushReplacement(
               context,
@@ -154,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   shape: StadiumBorder(),
                   minimumSize: Size(mediaQuery.size.width * .5, mediaQuery.size.width * .1),
                 ),
-                  icon: Icon(Icons.edit,size: 25,), label: Text('UPDATE',style: TextStyle(
+                  icon: Icon(Icons.system_update_alt,size: 25,), label: Text('UPDATE',style: TextStyle(
                   fontSize: 20,
                 ),),
               

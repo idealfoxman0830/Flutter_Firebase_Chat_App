@@ -1,14 +1,10 @@
 
 // import 'package:flash_chat_flutter_with_firebase/main.dart';
-import 'dart:convert';
-import 'dart:developer';
 
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat_flutter_with_firebase/screens/profile_screen.dart';
 import 'package:flash_chat_flutter_with_firebase/screens/welcome_page.dart';
-// import 'package:flash_chat_flutter_with_firebase/api/apis.dart';
 import 'package:flash_chat_flutter_with_firebase/widgets/chat_user_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,13 +25,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  Stream<QuerySnapshot<Map<String, dynamic>>> getUsersStream() {
-    return firestore.collection('users').snapshots();
-  }
+  //
+  // Stream<QuerySnapshot<Map<String, dynamic>>> getUsersStream() {
+  //   return firestore.collection('users').snapshots();
+  // }
 
   List<ChatUser> list=[];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    APIs.getSelfInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +56,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.pop(context);
           }, icon: Icon(CupertinoIcons.search),),
           IconButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(user: list[0],)));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(user: APIs.me,)));
           }, icon: Icon(CupertinoIcons.ellipsis_vertical),),
         ],
       ),
@@ -62,7 +64,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () async{
             await APIs.auth.signOut();
             await GoogleSignIn().signOut();
-            print('signout');
+            print('sign-out');
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => WelcomePage()),
@@ -75,7 +77,7 @@ class _HomePageState extends State<HomePage> {
 
       ),
         body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: getUsersStream(),
+          stream: APIs.getAllUsers(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
             
            
