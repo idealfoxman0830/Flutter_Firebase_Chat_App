@@ -1,6 +1,6 @@
 // import 'package:flash_chat_flutter_with_firebase/main.dart';
 import 'dart:io';
-
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat_flutter_with_firebase/screens/welcome_page.dart';
@@ -254,12 +254,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         final ImagePicker picker = ImagePicker();
                         // Pick an image.
                         final XFile? image =
-                            await picker.pickImage(source: ImageSource.gallery);
+                            await picker.pickImage(source: ImageSource.gallery,imageQuality: 80);
                         if (image != null) {
                           print('image path : ${image.path}');
                           setState(() {
                             _image = image.path;
                           });
+                          APIs.updateProfilePicture(File(_image!));
                           Navigator.pop(context);
                         }
                       },
@@ -274,12 +275,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         final ImagePicker picker = ImagePicker();
                         // Pick an image.
                         final XFile? image =
-                        await picker.pickImage(source: ImageSource.camera);
+                        await picker.pickImage(source: ImageSource.camera,imageQuality: 80);
                         if (image != null) {
                           print('image path : ${image.path}');
                           setState(() {
                             _image = image.path;
                           });
+                          APIs.updateProfilePicture(File(_image!));
                           Navigator.pop(context);
                         }
                       },
