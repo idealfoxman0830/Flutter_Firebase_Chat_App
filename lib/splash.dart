@@ -1,6 +1,7 @@
 import 'package:flash_chat_flutter_with_firebase/screens/home_page.dart';
 // import 'package:flash_chat_flutter_with_firebase/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'api/apis.dart';
 import 'screens/welcome_page.dart';
@@ -24,6 +25,10 @@ class _SplashState extends State<Splash> {
 
   _navigateToNextPage() async{
     await Future.delayed(Duration(milliseconds: 9000),(){});
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    // SystemChrome.setSystemUIOverlayStyle(
+    //  const SystemUiOverlayStyle(systemNavigationBarColor: Colors.white, statusBarColor: Colors.white),
+    // );
 
     if((await APIs.auth.currentUser !=null)){
 

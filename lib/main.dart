@@ -37,6 +37,9 @@ class _FlashChatState extends State<FlashChat> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          // color: Colors.white,
+        ),
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: Colors.black),
         ),
@@ -47,7 +50,7 @@ class _FlashChatState extends State<FlashChat> {
         HomePage.id: (context) => const HomePage(),
         LoginScreen.id: (context) => const LoginScreen(),
         RegistrationScreen.id: (context) => const RegistrationScreen(),
-        ChatScreen.id: (context) => const ChatScreen(),
+        // ChatScreen.id: (context) => const ChatScreen(),
         WelcomePage.id:(context) => const WelcomePage(),
       },
      // initialRoute: '/',

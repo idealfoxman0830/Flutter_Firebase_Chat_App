@@ -2,6 +2,8 @@
 import 'package:flash_chat_flutter_with_firebase/models/chat_user.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/chat_screen.dart';
+
 class ChatUserCard extends StatefulWidget {
 
   final ChatUser chatUser;
@@ -24,7 +26,9 @@ class _ChatUserCardState extends State<ChatUserCard> {
        color: Colors.cyan.shade50,
       elevation: 0.5,
       child: InkWell(
-        onTap: (){},
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatScreen(user: widget.chatUser,)));
+        },
           child: ListTile(
             leading: ClipOval(
               child: CircleAvatar(
