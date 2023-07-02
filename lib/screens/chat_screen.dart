@@ -23,6 +23,11 @@ class _ChatScreenState extends State<ChatScreen> {
           automaticallyImplyLeading: false,
           flexibleSpace: _appBar(),
         ),
+        body: Column(
+          children: [
+            _chatInput(),
+          ],
+        ),
       ),
     );
   }
@@ -71,6 +76,59 @@ class _ChatScreenState extends State<ChatScreen> {
                 fontWeight: FontWeight.w400,
               ),),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _chatInput(){
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8,horizontal: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Row(
+                children: [
+                  // emoji button
+                  IconButton(onPressed: (){},
+                      icon: Icon(Icons.emoji_emotions,
+                      color: Colors.blueAccent,
+                      ),),
+                  Expanded(
+                    child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        hintText: 'Type Something',
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  // gallery button
+                  IconButton(onPressed: (){},
+                    icon: Icon(Icons.image,
+                      color: Colors.blueAccent,
+                    ),),
+                  // camera button
+                  IconButton(onPressed: (){},
+                    icon: Icon(Icons.camera_alt,
+                      color: Colors.blueAccent,
+                    ),),
+                ],
+              ),
+            ),
+          ),
+          // send message button
+          MaterialButton(onPressed: (){},
+            shape: CircleBorder(),
+            minWidth: 0,
+            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+            color: Colors.lightBlue,
+          child: Icon(Icons.send,color: Colors.white,),
           ),
         ],
       ),
