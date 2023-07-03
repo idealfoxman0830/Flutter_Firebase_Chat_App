@@ -7,6 +7,7 @@ import 'package:flash_chat_flutter_with_firebase/screens/registration_screen.dar
 import 'package:flash_chat_flutter_with_firebase/components/rounded_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 // import 'package:lottie/lottie.dart';
+import 'package:flash_chat_flutter_with_firebase/main.dart';
 
 import '../api/apis.dart';
 import '../helper/dialogs.dart';
@@ -93,7 +94,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-
+     mq = MediaQuery.of(context).size;
     // getting the size of the window
     // size = MediaQuery.of(context).size;
     // height = size.height;

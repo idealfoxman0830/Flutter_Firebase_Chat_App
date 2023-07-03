@@ -12,7 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 // import 'home.dart';
 import 'splash.dart';
 
-// late Size mediaQuery;
+ late Size mq;
 
 void main() async{
 
