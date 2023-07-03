@@ -41,7 +41,7 @@ class _MessageCardState extends State<MessageCard> {
             margin: EdgeInsets.symmetric(
                 vertical: mq.height * .02, horizontal: mq.width * .04),
             child: Text(
-              widget.message.msg + "hello this is me sourav barman i am grom joypurhat ",
+              widget.message.msg,
               style: TextStyle(fontSize: 15, color: Colors.black87),
             ),
           ),
@@ -100,7 +100,7 @@ class _MessageCardState extends State<MessageCard> {
             margin: EdgeInsets.symmetric(
                 vertical: mq.height * .02, horizontal: mq.width * .04),
             child: Text(
-              widget.message.msg + "hello this is me sourav barman i am grom joypurhat ",
+              widget.message.msg,
               style: TextStyle(fontSize: 15, color: Colors.black87),
             ),
           ),

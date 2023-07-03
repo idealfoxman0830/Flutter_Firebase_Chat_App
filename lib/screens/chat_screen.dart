@@ -21,6 +21,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   // for storing all messages
   List<Message> _list = [];
+  final _textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: APIs.getAllMessages(),
+                stream: APIs.getAllMessages(widget.user),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                         snapshot) {
@@ -48,34 +49,35 @@ class _ChatScreenState extends State<ChatScreen> {
                     //   print('data : ${jsonEncode(i.data())}');
                     // }
 
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return SizedBox();
+                    //   Center(
+                    //   child: CircularProgressIndicator(),
+                    // );
                   }
 
-                  //   final List<QueryDocumentSnapshot<Map<String, dynamic>>> documents = snapshot.data!.docs;
+                     //final List<QueryDocumentSnapshot<Map<String, dynamic>>> documents = snapshot.data!.docs;
                   final data = snapshot.data!.docs;
-                  print('data ${jsonEncode(data[0].data())}');
-                  // list = documents
-                  //     .map((e) => ChatUser.fromJson(e.data()))
-                  //     .toList() ??
-                  //     [];
+               //   print('data ${jsonEncode(data[0].data())}');
+                  _list = data
+                      .map((e) => Message.fromJson(e.data()))
+                      .toList() ??
+                      [];
 
-                  _list.clear();
-                  _list.add(Message(
-                      msg: 'hii',
-                      read: '',
-                      told: 'xyz',
-                      type: Type.text,
-                      sent: '12:00 AM',
-                      fromId: APIs.authuser.uid));
-                  _list.add(Message(
-                      msg: 'hello',
-                      read: '',
-                      told: APIs.authuser.uid,
-                      type: Type.text,
-                      sent: '12:05 AM',
-                      fromId: 'xyz'));
+                  // _list.clear();
+                  // _list.add(Message(
+                  //     msg: 'hii',
+                  //     read: '',
+                  //     told: 'xyz',
+                  //     type: Type.text,
+                  //     sent: '12:00 AM',
+                  //     fromId: APIs.authuser.uid));
+                  // _list.add(Message(
+                  //     msg: 'hello',
+                  //     read: '',
+                  //     told: APIs.authuser.uid,
+                  //     type: Type.text,
+                  //     sent: '12:05 AM',
+                  //     fromId: 'xyz'));
 
                   if (_list.isNotEmpty) {
                     return ListView.builder(
@@ -189,6 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   Expanded(
                     child: TextField(
+                      controller: _textController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
                       decoration: InputDecoration(
@@ -219,7 +222,13 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           // send message button
           MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+               if(_textController.text.isNotEmpty){
+                 APIs.sendMessage(widget.user, _textController.text);
+                 _textController.text = '';
+               }
+
+            },
             shape: CircleBorder(),
             minWidth: 0,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
