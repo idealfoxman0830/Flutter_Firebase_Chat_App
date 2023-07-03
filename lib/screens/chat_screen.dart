@@ -1,11 +1,12 @@
-import 'dart:convert';
-
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flash_chat_flutter_with_firebase/models/chat_user.dart';
 import 'package:flash_chat_flutter_with_firebase/widgets/message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat_flutter_with_firebase/models/message.dart';
 import '../api/apis.dart';
+import '../main.dart';
 
 //ChatScreen
 
@@ -22,87 +23,117 @@ class _ChatScreenState extends State<ChatScreen> {
   // for storing all messages
   List<Message> _list = [];
   final _textController = TextEditingController();
+  bool _showEmoji = false;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    mq = MediaQuery.of(context).size;
 
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: _appBar(),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: APIs.getAllMessages(widget.user),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                        snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
+    return GestureDetector(
+      onTap: ()=> FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: WillPopScope(
+          onWillPop: () {
+            if (_showEmoji) {
+              setState(() {
+                _showEmoji = !_showEmoji;
+              });
+              return Future.value(false);
+            } else {
+              return Future.value(true);
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: _appBar(),
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                    stream: APIs.getAllMessages(widget.user),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                            snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
 
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    // for(var i in data!){
-                    //   print('data : ${jsonEncode(i.data())}');
-                    // }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // for(var i in data!){
+                        //   print('data : ${jsonEncode(i.data())}');
+                        // }
 
-                    return SizedBox();
-                    //   Center(
-                    //   child: CircularProgressIndicator(),
-                    // );
-                  }
+                        return SizedBox();
+                        //   Center(
+                        //   child: CircularProgressIndicator(),
+                        // );
+                      }
 
-                     //final List<QueryDocumentSnapshot<Map<String, dynamic>>> documents = snapshot.data!.docs;
-                  final data = snapshot.data!.docs;
-               //   print('data ${jsonEncode(data[0].data())}');
-                  _list = data
-                      .map((e) => Message.fromJson(e.data()))
-                      .toList() ??
-                      [];
+                      //final List<QueryDocumentSnapshot<Map<String, dynamic>>> documents = snapshot.data!.docs;
+                      final data = snapshot.data!.docs;
+                      //   print('data ${jsonEncode(data[0].data())}');
+                      _list =
+                          data.map((e) => Message.fromJson(e.data())).toList() ??
+                              [];
 
-                  // _list.clear();
-                  // _list.add(Message(
-                  //     msg: 'hii',
-                  //     read: '',
-                  //     told: 'xyz',
-                  //     type: Type.text,
-                  //     sent: '12:00 AM',
-                  //     fromId: APIs.authuser.uid));
-                  // _list.add(Message(
-                  //     msg: 'hello',
-                  //     read: '',
-                  //     told: APIs.authuser.uid,
-                  //     type: Type.text,
-                  //     sent: '12:05 AM',
-                  //     fromId: 'xyz'));
+                      // _list.clear();
+                      // _list.add(Message(
+                      //     msg: 'hii',
+                      //     read: '',
+                      //     told: 'xyz',
+                      //     type: Type.text,
+                      //     sent: '12:00 AM',
+                      //     fromId: APIs.authuser.uid));
+                      // _list.add(Message(
+                      //     msg: 'hello',
+                      //     read: '',
+                      //     told: APIs.authuser.uid,
+                      //     type: Type.text,
+                      //     sent: '12:05 AM',
+                      //     fromId: 'xyz'));
 
-                  if (_list.isNotEmpty) {
-                    return ListView.builder(
-                      itemCount: _list.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        //  final user = documents[index].data();
+                      if (_list.isNotEmpty) {
+                        return ListView.builder(
+                          itemCount: _list.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            //  final user = documents[index].data();
 
-                        return MessageCard(message: _list[index]);
-                      },
-                    );
-                  }
-                  return Center(
-                    child: Text(
-                      'Say Hii!🤝',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w400,
+                            return MessageCard(message: _list[index]);
+                          },
+                        );
+                      }
+                      return Center(
+                        child: Text(
+                          'Say Hii!🤝',
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                _chatInput(),
+                if(_showEmoji)
+                  SizedBox(
+                    height: mq.height *.35,
+                    child: EmojiPicker(
+                      textEditingController: _textController,
+                      config: Config(
+                        columns: 7,
+                        emojiSizeMax: 32 *
+                            (Platform.isIOS
+                                ? 1.30
+                                : 1.0), // Issue: https://github.com/flutter/flutter/issues/28894
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+              ],
             ),
-            _chatInput(),
-          ],
+          ),
         ),
       ),
     );
@@ -183,7 +214,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   // emoji button
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                      FocusScope.of(context).unfocus();
+                        _showEmoji = !_showEmoji;
+                      });
+                    },
                     icon: Icon(
                       Icons.emoji_emotions,
                       color: Colors.blueAccent,
@@ -194,6 +230,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       controller: _textController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
+                      onTap: () {
+                        if(_showEmoji){
+                          setState(() {
+                            _showEmoji = !_showEmoji;
+                          });
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: 'Type Something',
                         border: InputBorder.none,
@@ -223,11 +266,10 @@ class _ChatScreenState extends State<ChatScreen> {
           // send message button
           MaterialButton(
             onPressed: () {
-               if(_textController.text.isNotEmpty){
-                 APIs.sendMessage(widget.user, _textController.text);
-                 _textController.text = '';
-               }
-
+              if (_textController.text.isNotEmpty) {
+                APIs.sendMessage(widget.user, _textController.text);
+                _textController.text = '';
+              }
             },
             shape: CircleBorder(),
             minWidth: 0,
