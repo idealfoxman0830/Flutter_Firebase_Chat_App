@@ -89,5 +89,11 @@ class APIs {
       'image': me.image,
     });
   }
+  /// ************************* chatscreen***************
+
+  // getting all messages of a specific conversation from firestore database
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(){
+    return firestore.collection('messages').snapshots();
+  }
 
 }

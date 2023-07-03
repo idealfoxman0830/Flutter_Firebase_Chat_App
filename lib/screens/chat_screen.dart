@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat_flutter_with_firebase/models/chat_user.dart';
 import 'package:flutter/material.dart';
-import '../constants.dart';
+
+import '../api/apis.dart';
 
 //ChatScreen
 
@@ -25,6 +29,55 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         body: Column(
           children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: APIs.getAllMessages(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // for(var i in data!){
+                    //   print('data : ${jsonEncode(i.data())}');
+                    // }
+
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+               //   final List<QueryDocumentSnapshot<Map<String, dynamic>>> documents = snapshot.data!.docs;
+                  final data = snapshot.data!.docs;
+                  print('data ${jsonEncode(data[0].data())}');
+                  // list = documents
+                  //     .map((e) => ChatUser.fromJson(e.data()))
+                  //     .toList() ??
+                  //     [];
+                    final list = ['hi','hello'];
+                  if (list.isNotEmpty) {
+                    return ListView.builder(
+                      itemCount: list.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        //  final user = documents[index].data();
+
+                        return Text('Message : ${list[index]}');
+                      },
+                    );
+                  }
+                  return Center(
+                    child: Text(
+                      'Say Hii!🤝',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
             _chatInput(),
           ],
         ),
