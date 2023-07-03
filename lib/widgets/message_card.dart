@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/apis.dart';
+import '../helper/my_date_util.dart';
 import '../main.dart';
 import '../models/message.dart';
 
@@ -23,6 +24,11 @@ class _MessageCardState extends State<MessageCard> {
 
   // sender or another user messages
   Widget _blueMessage() {
+    if(widget.message.read.isEmpty){
+      APIs.updateMessageReadStatus(widget.message);
+      print('message read update from ');
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -48,7 +54,7 @@ class _MessageCardState extends State<MessageCard> {
         ),
         Padding(
           padding: EdgeInsets.only(right: mq.width * .04),
-          child: Text(widget.message.sent,
+          child: Text(MyDateUtil.getFromattedTime(context: context, time: widget.message.sent),
           style: TextStyle(
             fontSize: 13,
             color: Colors.black45,
@@ -70,14 +76,17 @@ class _MessageCardState extends State<MessageCard> {
             SizedBox(
               width: mq.width * 0.04,
             ),
-            Icon(Icons.done_all_outlined,
-            color: Colors.blue,
-              size: 20,
-            ),
+
+            if(widget.message.read.isNotEmpty)
+                Icon(Icons.done_all_outlined,
+                color: Colors.blue,
+                  size: 20,
+                ),
+
             SizedBox(
               width: 1,
             ),
-            Text(widget.message.read+ '12.00 AM',
+            Text(MyDateUtil.getFromattedTime(context: context, time: widget.message.sent),
               style: TextStyle(
                 fontSize: 13,
                 color: Colors.black45,

@@ -102,26 +102,44 @@ class APIs {
   // chats(collection) --> conversation_id(doc) --> messages(collection) --> message(doc)
 
   // useful for getting conversational id
- static String getConversationalID(String id) => authuser.uid.hashCode <= id.hashCode
-      ? '${authuser.uid}_$id'
-      : '${id}_${authuser.uid}';
+  static String getConversationalID(String id) =>
+      authuser.uid.hashCode <= id.hashCode
+          ? '${authuser.uid}_$id'
+          : '${id}_${authuser.uid}';
 
   // getting all messages of a specific conversation from firestore database
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(ChatUser user) {
-    return firestore.collection('chats/${getConversationalID(user.id)}/messages/').snapshots();
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
+      ChatUser user) {
+    return firestore
+        .collection('chats/${getConversationalID(user.id)}/messages/')
+        .snapshots();
   }
   // for sending message | Doc id will be the message sending id
 
-static Future<void> sendMessage(ChatUser chatUserID,String msg) async{
-   // message sending time (also used as uid)
+  static Future<void> sendMessage(ChatUser chatUserID, String msg) async {
+    // message sending time (also used as uid)
     final time = DateTime.now().millisecondsSinceEpoch.toString();
 
     // message to send
 
-    final Message message = Message(msg: msg, read: '', told: chatUserID.id, type: Type.text, sent: time, fromId: authuser.uid);
+    final Message message = Message(
+        msg: msg,
+        read: '',
+        told: chatUserID.id,
+        type: Type.text,
+        sent: time,
+        fromId: authuser.uid);
 
-  final ref = firestore.collection('chats/${getConversationalID(chatUserID.id)}/messages/');
-  await ref.doc(time).set(message.toJson());
+    final ref = firestore
+        .collection('chats/${getConversationalID(chatUserID.id)}/messages/');
+    await ref.doc(time).set(message.toJson());
+  }
+// update read status of message
 
-}
+  static Future<void> updateMessageReadStatus(Message message) async {
+    firestore
+        .collection('chats/${getConversationalID(message.fromId)}/messages/')
+        .doc(message.sent)
+        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+  }
 }
