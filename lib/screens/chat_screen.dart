@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:flash_chat_flutter_with_firebase/helper/my_date_util.dart';
 import 'package:flash_chat_flutter_with_firebase/models/chat_user.dart';
 import 'package:flash_chat_flutter_with_firebase/widgets/message_card.dart';
 import 'package:flutter/material.dart';
@@ -155,60 +156,85 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _appBar() {
     return InkWell(
       onTap: () {},
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-          ),
-          ClipOval(
-            child: CircleAvatar(
-              radius: 20,
-              child: FadeInImage.assetNetwork(
-                //placeholder: 'https://i.pinimg.com/originals/80/b5/81/80b5813d8ad81a765ca47ebc59a65ac3.jpg', // replace with your placeholder image path
-                image: widget.user.image, // replace with your image URL
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-                imageErrorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons
-                      .error); // display an error icon when image fails to load
-                },
-                placeholder: 'images/logo.png',
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child:  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: APIs.getUserInfo(widget.user),
+        builder:(BuildContext context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+            snapshot){
+
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final data = snapshot.data!.docs;
+          final _list = data
+              .map((e) => ChatUser.fromJson(e.data()))
+              .toList();
+
+
+          return Row(
             children: [
-              Text(
-                widget.user.name,
-                style: TextStyle(
-                  fontSize: 16,
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.arrow_back,
                   color: Colors.white,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
-              Text(
-                'no active status',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
+              ClipOval(
+                child: CircleAvatar(
+                  radius: 20,
+                  child: FadeInImage.assetNetwork(
+                    //placeholder: 'https://i.pinimg.com/originals/80/b5/81/80b5813d8ad81a765ca47ebc59a65ac3.jpg', // replace with your placeholder image path
+                    image: widget.user.image, // replace with your image URL
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    imageErrorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons
+                          .error); // display an error icon when image fails to load
+                    },
+                    placeholder: 'images/logo.png',
+                  ),
                 ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.user.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    _list.isNotEmpty ?
+                      _list[0].isOnline ? 'Online' :
+                    MyDateUtil.getLastActiveTime(context: context, lastActive: _list[0].lastActive) : MyDateUtil.getLastActiveTime(context: context, lastActive: widget.user.lastActive)
+                    ,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'package:flash_chat_flutter_with_firebase/screens/home_page.dart';
 // import 'package:flash_chat_flutter_with_firebase/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-import 'package:lottie/lottie.dart';
+// import 'package:lottie/lottie.dart';
 import 'api/apis.dart';
 import 'screens/welcome_page.dart';
 

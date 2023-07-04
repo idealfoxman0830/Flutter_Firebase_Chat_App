@@ -72,7 +72,7 @@ class _MessageCardState extends State<MessageCard> {
         Padding(
           padding: EdgeInsets.only(right: mq.width * .04),
           child: Text(
-            MyDateUtil.getFromattedTime(
+            MyDateUtil.getFormattedTime(
                 context: context, time: widget.message.sent),
             style: TextStyle(
               fontSize: 13,
@@ -104,7 +104,7 @@ class _MessageCardState extends State<MessageCard> {
               width: 1,
             ),
             Text(
-              MyDateUtil.getFromattedTime(
+              MyDateUtil.getFormattedTime(
                   context: context, time: widget.message.sent),
               style: TextStyle(
                 fontSize: 13,

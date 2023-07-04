@@ -87,7 +87,7 @@ class _ChatUserCardState extends State<ChatUserCard> {
                    color: Colors.greenAccent.shade400,
                    borderRadius: BorderRadius.circular(20),
                  ),
-                 ) :  Text(MyDateUtil.getFromattedTime(context: context, time: _message!.sent)),
+                 ) :  Text(MyDateUtil.getFormattedTime(context: context, time: _message!.sent)),
 
                );
              }

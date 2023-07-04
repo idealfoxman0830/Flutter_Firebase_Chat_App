@@ -77,6 +77,7 @@ class APIs {
     });
   }
 
+
   // update profile picture of user
   static Future<void> updateProfilePicture(File file) async {
     // getting file extension
@@ -98,6 +99,27 @@ class APIs {
       'image': me.image,
     });
   }
+
+
+  // for getting specific picture of user
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(ChatUser chatUser) {
+    return firestore
+        .collection('users')
+        .where('id', isEqualTo: chatUser.id)
+        .snapshots();
+  }
+
+  // update online or last active status of user
+   static Future<void> updateActiveStatus(bool isOnline) async{
+     firestore
+         .collection('users')
+         .doc(authuser.uid).update(
+         {
+      'is_online': isOnline,
+      'last_active': DateTime.now().millisecondsSinceEpoch.toString()
+    });
+   }
+
 
   /// ************************* chat-screen***************
   // chats(collection) --> conversation_id(doc) --> messages(collection) --> message(doc)
