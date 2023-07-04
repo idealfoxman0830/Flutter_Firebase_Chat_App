@@ -1,5 +1,6 @@
 // import 'package:flash_chat_flutter_with_firebase/main.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,6 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: Colors.redAccent,
           onPressed: () async {
             Dialogs.showProgressBar(context);
+            await APIs.updateActiveStatus(false);
             await APIs.auth.signOut();
             await GoogleSignIn().signOut();
             Navigator.pop(context);
@@ -58,6 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // });
             Dialogs.showSnackbar(context, 'Successfully Log-out');
             print('sign-out');
+            APIs.auth = FirebaseAuth.instance;
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => WelcomePage()),

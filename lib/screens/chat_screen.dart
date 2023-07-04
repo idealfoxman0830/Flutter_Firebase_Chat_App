@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flash_chat_flutter_with_firebase/helper/my_date_util.dart';
 import 'package:flash_chat_flutter_with_firebase/models/chat_user.dart';
+import 'package:flash_chat_flutter_with_firebase/screens/view_profile_screen.dart';
 import 'package:flash_chat_flutter_with_firebase/widgets/message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat_flutter_with_firebase/models/message.dart';
@@ -155,7 +156,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _appBar() {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ViewProfileScreen(user: widget.user,)));
+      },
       child:  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: APIs.getUserInfo(widget.user),
         builder:(BuildContext context,
