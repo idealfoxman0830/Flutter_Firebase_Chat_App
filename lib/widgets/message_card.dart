@@ -24,7 +24,7 @@ class _MessageCardState extends State<MessageCard> {
 
   // sender or another user messages
   Widget _blueMessage() {
-    if(widget.message.read.isEmpty){
+    if (widget.message.read.isEmpty) {
       APIs.updateMessageReadStatus(widget.message);
       print('message read update from ');
     }
@@ -43,25 +43,43 @@ class _MessageCardState extends State<MessageCard> {
               ),
               border: Border.all(color: Color(0xffB9D8E7FF)),
             ),
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all( widget.message.type == Type.image ? mq.width * .03 : mq.width * .04),
             margin: EdgeInsets.symmetric(
                 vertical: mq.height * .02, horizontal: mq.width * .04),
-            child: Text(
-              widget.message.msg,
-              style: TextStyle(fontSize: 15, color: Colors.black87),
+            child: widget.message.type == Type.text
+                ?  // show text
+                   Text(
+                    widget.message.msg,
+                    style: TextStyle(fontSize: 15, color: Colors.black87),
+                  )
+                :    // show message
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8), // adjust the radius for rounded corners
+              child: FadeInImage.assetNetwork(
+                image: widget.message.msg, // replace with your image URL
+                // width: 200,
+                // height: 250,
+                // fit: BoxFit.cover,
+                imageErrorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.image,
+                    weight: 250,); // display an error icon when the image fails to load
+                },
+                placeholder: 'images/logo.png',
+              ),
             ),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(right: mq.width * .04),
-          child: Text(MyDateUtil.getFromattedTime(context: context, time: widget.message.sent),
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.black45,
-          ),
+          child: Text(
+            MyDateUtil.getFromattedTime(
+                context: context, time: widget.message.sent),
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.black45,
+            ),
           ),
         ),
-
       ],
     );
   }
@@ -76,17 +94,18 @@ class _MessageCardState extends State<MessageCard> {
             SizedBox(
               width: mq.width * 0.04,
             ),
-
-            if(widget.message.read.isNotEmpty)
-                Icon(Icons.done_all_outlined,
+            if (widget.message.read.isNotEmpty)
+              Icon(
+                Icons.done_all_outlined,
                 color: Colors.blue,
-                  size: 20,
-                ),
-
+                size: 20,
+              ),
             SizedBox(
               width: 1,
             ),
-            Text(MyDateUtil.getFromattedTime(context: context, time: widget.message.sent),
+            Text(
+              MyDateUtil.getFromattedTime(
+                  context: context, time: widget.message.sent),
               style: TextStyle(
                 fontSize: 13,
                 color: Colors.black45,
@@ -105,16 +124,33 @@ class _MessageCardState extends State<MessageCard> {
               ),
               border: Border.all(color: Color(0xffB9D8E7FF)),
             ),
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all( widget.message.type == Type.image ? mq.width * .03 : mq.width * .04),
             margin: EdgeInsets.symmetric(
                 vertical: mq.height * .02, horizontal: mq.width * .04),
-            child: Text(
+            child: widget.message.type == Type.text
+                ?  // show text
+            Text(
               widget.message.msg,
               style: TextStyle(fontSize: 15, color: Colors.black87),
+            )
+                :    // show message
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8), // adjust the radius for rounded corners
+              child: FadeInImage.assetNetwork(
+                image: widget.message.msg, // replace with your image URL
+                // width: 200,
+                // height: 250,
+                // fit: BoxFit.cover,
+                imageErrorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.image,
+                    weight: 250,); // display an error icon when the image fails to load
+                },
+                placeholder: 'images/logo.png',
+              ),
             ),
+
           ),
         ),
-
       ],
     );
   }

@@ -75,7 +75,10 @@ class _ChatUserCardState extends State<ChatUserCard> {
 
                  // mediaQuery.size.width * .70,
                  title: Text(widget.chatUser.name),
-                 subtitle: Text(_message !=null ? _message!.msg : widget.chatUser.about,maxLines: 1,),
+                 subtitle: Text(_message !=null ?
+                            _message?.type == Type.image ?
+                              'Sends image'  :
+                                  _message!.msg : widget.chatUser.about,maxLines: 1,),
                  trailing: _message == null ?
                  null :
                  _message!.read.isEmpty && _message!.fromId != APIs.authuser.uid ?

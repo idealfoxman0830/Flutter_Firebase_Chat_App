@@ -5,6 +5,7 @@ import 'package:flash_chat_flutter_with_firebase/models/chat_user.dart';
 import 'package:flash_chat_flutter_with_firebase/widgets/message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat_flutter_with_firebase/models/message.dart';
+import 'package:image_picker/image_picker.dart';
 import '../api/apis.dart';
 import '../main.dart';
 
@@ -23,7 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // for storing all messages
   List<Message> _list = [];
   final _textController = TextEditingController();
-  bool _showEmoji = false;
+  bool _showEmoji = false , _isUploading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                       if (_list.isNotEmpty) {
                         return ListView.builder(
+                          reverse: true,
                           itemCount: _list.length,
                           itemBuilder: (BuildContext context, int index) {
                             //  final user = documents[index].data();
@@ -116,6 +118,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                 ),
+
+                // Progress indicator for showing uploading
+
+                if(_isUploading)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+                          child: CircularProgressIndicator(strokeWidth: 2,),
+                      ),
+                    ),
                 _chatInput(),
                 if(_showEmoji)
                   SizedBox(
@@ -245,7 +258,23 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   // gallery button
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      // Pick an image.
+                      final List<XFile> images=
+                          await picker.pickMultiImage(imageQuality: 80);
+                      for (var i in images){
+                        setState(() {
+                          _isUploading = true;
+                        });
+                        print('image path : ${i.path}');
+                        await APIs.sendChatImage(widget.user,File(i.path));
+                        setState(() {
+                          _isUploading = false;
+                        });
+                        //    Navigator.pop(context);
+                      }
+                    },
                     icon: Icon(
                       Icons.image,
                       color: Colors.blueAccent,
@@ -253,7 +282,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   // camera button
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      // Pick an image.
+                      final XFile? image =
+                          await picker.pickImage(source: ImageSource.camera,imageQuality: 80);
+                      if (image != null) {
+                        print('image path : ${image.path}');
+
+                        await APIs.sendChatImage(widget.user,File(image.path));
+                    //    Navigator.pop(context);
+                      }
+                    },
                     icon: Icon(
                       Icons.camera_alt,
                       color: Colors.blueAccent,
@@ -267,7 +307,7 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialButton(
             onPressed: () {
               if (_textController.text.isNotEmpty) {
-                APIs.sendMessage(widget.user, _textController.text);
+                APIs.sendMessage(widget.user, _textController.text,Type.text);
                 _textController.text = '';
               }
             },
