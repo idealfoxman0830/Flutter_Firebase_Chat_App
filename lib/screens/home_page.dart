@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
     APIs.getSelfInfo();
-    APIs.updateActiveStatus(true);
     /*
     * for updating user active status according to lifecycle events
     * resume -- active or online
