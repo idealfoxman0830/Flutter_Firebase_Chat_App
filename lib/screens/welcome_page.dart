@@ -8,6 +8,8 @@ import 'package:flash_chat_flutter_with_firebase/components/rounded_button.dart'
 import 'package:google_sign_in/google_sign_in.dart';
 // import 'package:lottie/lottie.dart';
 import 'package:flash_chat_flutter_with_firebase/main.dart';
+import 'package:lottie/lottie.dart';
+import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 
 import '../api/apis.dart';
 import '../helper/dialogs.dart';
@@ -30,8 +32,6 @@ class _WelcomePageState extends State<WelcomePage> {
   _handleGoogleBtnCLick(){
     _signInWithGoogle().then((user) async {
 
-
-
       if(user != null){
 
         if((await APIs.userExists())){
@@ -43,16 +43,9 @@ class _WelcomePageState extends State<WelcomePage> {
 
           });
          }
-
-
       }
-
-
-
     } );
   }
-
-
   Future<UserCredential?> _signInWithGoogle() async {
 
     try{
@@ -90,6 +83,14 @@ class _WelcomePageState extends State<WelcomePage> {
   //
   // }
 
+  //  @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   _welcomeImage();
+  // }
+
+
 
 
   @override
@@ -109,14 +110,7 @@ class _WelcomePageState extends State<WelcomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
 
-              // Lottie.network(
-              //   'https://assets4.lottiefiles.com/packages/lf20_1pxqjqps.json',
-              //   repeat: true,
-              //   width: 100,
-              //   height: 320,
-              //   fit: BoxFit.fill,
-              //   animate: true,
-              // ),
+              WelcomeImageLottie(),
 
               Text('Welcome to Flash Chat',
              textAlign: TextAlign.center,
@@ -141,21 +135,22 @@ class _WelcomePageState extends State<WelcomePage> {
               // ),
 
 
-             RoundedButton(
-                 onPressed: (){
-                   Navigator.pushNamed(context, LoginScreen.id);
-                 },
-               colour: Colors.blueAccent,
-               title: 'Login',
+             // RoundedButton(
+             //     onPressed: (){
+             //       Navigator.pushNamed(context, LoginScreen.id);
+             //     },
+             //   colour: Colors.blueAccent,
+             //   title: 'Login',
+             //
+             // ),
 
-             ),
-             RoundedButton(
-               onPressed: (){
-                 Navigator.pushNamed(context, RegistrationScreen.id);
-               },
-               colour:Colors.orange.shade400,
-               title: 'Register',
-             ),
+             // RoundedButton(
+             //   onPressed: (){
+             //     Navigator.pushNamed(context, RegistrationScreen.id);
+             //   },
+             //   colour:Colors.orange.shade400,
+             //   title: 'Register',
+             // ),
 
               const SizedBox(
                 height: 10.0,
@@ -163,7 +158,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
               Material(
                 elevation: 5.0,
-                color: Colors.cyanAccent,
+                color: Colors.orangeAccent.shade200,
                 borderRadius: BorderRadius.circular(30.0),
                 child: MaterialButton(
                   onPressed: () {
@@ -175,7 +170,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   child: Text(
                     'Login With Google'
                     ,style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                   ),
                 ),
@@ -185,5 +180,51 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ),
     );
+  }
+}
+
+class WelcomeImageLottie extends StatelessWidget {
+  const WelcomeImageLottie({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+
+
+
+    Future<Widget> welcomeImage() async {
+      final hasInternet = await InternetConnectivity().hasInternetConnection;
+      if (hasInternet) {
+        // You are connected to the internet
+        return Lottie.network(
+          'https://assets4.lottiefiles.com/packages/lf20_1pxqjqps.json',
+          repeat: true,
+          width: 100,
+          height: 320,
+          fit: BoxFit.fill,
+          animate: true,
+        );
+      } else {
+        // No internet connection
+
+        Navigator.pushReplacementNamed(context!, WelcomePage.id); // Assuming 'context' is non-null
+        return Future.error('No internet connection'); // Return a future with an error
+      }
+    }
+    return FutureBuilder<Widget>(
+      future: welcomeImage(),
+      builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // While waiting for the future to complete, show a loading indicator
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // If an error occurred, handle it accordingly
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // If the future completed successfully, return the widget
+          return snapshot.data!;
+        }
+      },
+    );
+
   }
 }

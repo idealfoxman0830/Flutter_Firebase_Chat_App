@@ -137,15 +137,15 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                _showMessageUpdateDialog();
-              },
-              child: Icon(
-                CupertinoIcons.person_add,
-                size: 25.0,
-              ),
-            ),
+            // floatingActionButton: FloatingActionButton(
+            //   onPressed: () {
+            //     _showMessageUpdateDialog();
+            //   },
+            //   child: Icon(
+            //     CupertinoIcons.person_add,
+            //     size: 25.0,
+            //   ),
+            // ),
             body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: APIs.getAllUsers(),
               builder: (BuildContext context,
@@ -201,73 +201,73 @@ class _HomePageState extends State<HomePage> {
   }
 
   // add chat user dialog
-  void _showMessageUpdateDialog() {
-    String email = '';
-
-    showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          contentPadding: const EdgeInsets.only(
-              left: 24, right: 24, top: 20, bottom: 10),
-
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20)),
-
-          //title
-          title: Row(
-            children: const [
-              Icon(
-                Icons.person,
-                color: Colors.blue,
-                size: 28,
-              ),
-              Text('Add User')
-            ],
-          ),
-
-          //content
-          content: TextFormField(
-            maxLines: null,
-            onChanged: (value) => email = value,
-            decoration: InputDecoration(
-              hintText: 'Add Email',
-              prefixIcon: Icon(Icons.email),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15))),
-          ),
-
-          //actions
-          actions: [
-            //cancel button
-            MaterialButton(
-                onPressed: () {
-                  //hide alert dialog
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
-                )),
-
-            //Add button
-            MaterialButton(
-                onPressed: () async {
-                  //hide alert dialog
-                  Navigator.pop(context);
-                 if(email.isNotEmpty){
-                  await APIs.addChatUser(email).then((value){
-                    if(!value){
-                      Dialogs.showSnackbar(context,'User does not exist');
-                    }
-                  });
-                 }
-                },
-                child: const Text(
-                  'Add',
-                  style: TextStyle(color: Colors.blue, fontSize: 16),
-                ))
-          ],
-        ));
-  }
+  // void _showMessageUpdateDialog() {
+  //   String email = '';
+  //
+  //   showDialog(
+  //       context: context,
+  //       builder: (_) => AlertDialog(
+  //         contentPadding: const EdgeInsets.only(
+  //             left: 24, right: 24, top: 20, bottom: 10),
+  //
+  //         shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(20)),
+  //
+  //         //title
+  //         title: Row(
+  //           children: const [
+  //             Icon(
+  //               Icons.person,
+  //               color: Colors.blue,
+  //               size: 28,
+  //             ),
+  //             Text('Add User')
+  //           ],
+  //         ),
+  //
+  //         //content
+  //         content: TextFormField(
+  //           maxLines: null,
+  //           onChanged: (value) => email = value,
+  //           decoration: InputDecoration(
+  //             hintText: 'Add Email',
+  //             prefixIcon: Icon(Icons.email),
+  //               border: OutlineInputBorder(
+  //                   borderRadius: BorderRadius.circular(15))),
+  //         ),
+  //
+  //         //actions
+  //         actions: [
+  //           //cancel button
+  //           MaterialButton(
+  //               onPressed: () {
+  //                 //hide alert dialog
+  //                 Navigator.pop(context);
+  //               },
+  //               child: const Text(
+  //                 'Cancel',
+  //                 style: TextStyle(color: Colors.blue, fontSize: 16),
+  //               )),
+  //
+  //           //Add button
+  //           MaterialButton(
+  //               onPressed: () async {
+  //                 //hide alert dialog
+  //                 Navigator.pop(context);
+  //                if(email.isNotEmpty){
+  //                 await APIs.addChatUser(email).then((value){
+  //                   if(!value){
+  //                     Dialogs.showSnackbar(context,'User does not exist');
+  //                   }
+  //                 });
+  //                }
+  //               },
+  //               child: const Text(
+  //                 'Add',
+  //                 style: TextStyle(color: Colors.blue, fontSize: 16),
+  //               ))
+  //         ],
+  //       ));
+  // }
 }
 

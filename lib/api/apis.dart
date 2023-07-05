@@ -79,27 +79,27 @@ class APIs {
   }
 
   // for adding a chat user to our conversation
-  static Future<bool> addChatUser(String email) async {
-    final data = await firestore
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .get();
-
-    if (data.docs.isNotEmpty && data.docs.first.id != authuser.uid) {
-      // user exist
-
-      print((data.docs.first.data()));
-      firestore
-          .collection('users')
-          .doc(authuser.uid)
-          .collection('my_users')
-          .doc(data.docs.first.id).set({});
-
-      return true;
-    } else {
-      return false;
-    }
-  }
+  // static Future<bool> addChatUser(String email) async {
+  //   final data = await firestore
+  //       .collection('users')
+  //       .where('email', isEqualTo: email)
+  //       .get();
+  //
+  //   if (data.docs.isNotEmpty && data.docs.first.id != authuser.uid) {
+  //     // user exist
+  //
+  //     print((data.docs.first.data()));
+  //     firestore
+  //         .collection('users')
+  //         .doc(authuser.uid)
+  //         .collection('my_users')
+  //         .doc(data.docs.first.id).set({});
+  //
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   // for getting current user info
   static Future<void> getSelfInfo() async {
