@@ -24,62 +24,81 @@ class APIs {
 
   // for getting firebase message token
 
-static Future<void>getFirebaseMessageToken()async{
-  try {
-    // Request permission for receiving push notifications
-    await fMessaging.requestPermission();
+  static Future<void> getFirebaseMessageToken() async {
+    try {
+      // Request permission for receiving push notifications
+      await fMessaging.requestPermission();
 
-    // Get the FCM token
-    String? token = await fMessaging.getToken();
+      // Get the FCM token
+      String? token = await fMessaging.getToken();
 
-    if (token != null) {
-      // Store the token or perform any other necessary actions
-      me.pushToken = token;
-      print('Push token: $token');
+      if (token != null) {
+        // Store the token or perform any other necessary actions
+        me.pushToken = token;
+        print('Push token: $token');
+      }
+
+      //return token;
+    } catch (e) {
+      print('Error getting Firebase message token: $e');
+      //return null;
     }
-
-    //return token;
-  } catch (e) {
-    print('Error getting Firebase message token: $e');
-    //return null;
   }
-
-}
-
 
 // for sending push notification
-  static Future<void> sendPushNotification(ChatUser chatUser, String msg) async{
+  static Future<void> sendPushNotification(
+      ChatUser chatUser, String msg) async {
+    try {
+      final body = {
+        "to": chatUser.pushToken,
+        "notification": {
+          "title": chatUser.name,
+          "body": msg,
+        }
+      };
+      var response = await post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader:
+              'key=AAAAGSYnEtA:APA91bGOfBQ-x94R49yO9HIJjyOOl9VC1qfp2cFerb2dax7hsm8DH1wXVALaFfyk3GcbSooRucqato418Jg_332yx-iD6ougV78pLaUDMUq40nSAjHfiEny-54O4miGGDYO88Iw0wcLb'
+        },
+        body: jsonEncode(body),
+      );
 
-  try{
-    final body = {
-      "to" : chatUser.pushToken,
-      "notification" : {
-        "title" : chatUser.name,
-        "body" :msg,
-      }
-    };
-    var response = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-      headers: {
-      HttpHeaders.contentTypeHeader : 'application/json',
-      HttpHeaders.authorizationHeader:'key=AAAAGSYnEtA:APA91bGOfBQ-x94R49yO9HIJjyOOl9VC1qfp2cFerb2dax7hsm8DH1wXVALaFfyk3GcbSooRucqato418Jg_332yx-iD6ougV78pLaUDMUq40nSAjHfiEny-54O4miGGDYO88Iw0wcLb'
-
-      },
-      body:jsonEncode(body),
-    );
-
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-  }catch(e){
-  print('\n sendPushNotificationError : $e');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    } catch (e) {
+      print('\n sendPushNotificationError : $e');
+    }
   }
-
-  }
-
-
 
   // for checking user exist or not
   static Future<bool> userExists() async {
     return (await firestore.collection('users').doc(authuser.uid).get()).exists;
+  }
+
+  // for adding a chat user to our conversation
+  static Future<bool> addChatUser(String email) async {
+    final data = await firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (data.docs.isNotEmpty && data.docs.first.id != authuser.uid) {
+      // user exist
+
+      print((data.docs.first.data()));
+      firestore
+          .collection('users')
+          .doc(authuser.uid)
+          .collection('my_users')
+          .doc(data.docs.first.id).set({});
+
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // for getting current user info
@@ -91,9 +110,8 @@ static Future<void>getFirebaseMessageToken()async{
         .then((user) async {
       if (user.exists) {
         me = ChatUser.fromJson(user.data()!);
-       await getFirebaseMessageToken();
+        await getFirebaseMessageToken();
         updateActiveStatus(true);
-
       } else {
         await createUser().then((value) => getSelfInfo());
       }
@@ -140,7 +158,6 @@ static Future<void>getFirebaseMessageToken()async{
     });
   }
 
-
   // update profile picture of user
   static Future<void> updateProfilePicture(File file) async {
     // getting file extension
@@ -163,9 +180,9 @@ static Future<void>getFirebaseMessageToken()async{
     });
   }
 
-
   // for getting specific picture of user
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(ChatUser chatUser) {
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      ChatUser chatUser) {
     return firestore
         .collection('users')
         .where('id', isEqualTo: chatUser.id)
@@ -173,17 +190,13 @@ static Future<void>getFirebaseMessageToken()async{
   }
 
   // update online or last active status of user
-   static Future<void> updateActiveStatus(bool isOnline) async{
-     firestore
-         .collection('users')
-         .doc(authuser.uid).update(
-         {
+  static Future<void> updateActiveStatus(bool isOnline) async {
+    firestore.collection('users').doc(authuser.uid).update({
       'is_online': isOnline,
       'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
-           'push_token': me.pushToken
+      'push_token': me.pushToken
     });
-   }
-
+  }
 
   /// ************************* chat-screen***************
   // chats(collection) --> conversation_id(doc) --> messages(collection) --> message(doc)
@@ -197,14 +210,15 @@ static Future<void>getFirebaseMessageToken()async{
   // getting all messages of a specific conversation from firestore database
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
       ChatUser user) {
-         return firestore
+    return firestore
         .collection('chats/${getConversationalID(user.id)}/messages/')
-             .orderBy('sent',descending: true)
+        .orderBy('sent', descending: true)
         .snapshots();
   }
   // for sending message | Doc id will be the message sending id
 
-  static Future<void> sendMessage(ChatUser chatUserID, String msg,Type type) async {
+  static Future<void> sendMessage(
+      ChatUser chatUserID, String msg, Type type) async {
     // message sending time (also used as uid)
     final time = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -220,7 +234,8 @@ static Future<void>getFirebaseMessageToken()async{
 
     final ref = firestore
         .collection('chats/${getConversationalID(chatUserID.id)}/messages/');
-    await ref.doc(time).set(message.toJson()).then((value) => sendPushNotification(chatUserID, type == Type.text ? msg : 'image'));
+    await ref.doc(time).set(message.toJson()).then((value) =>
+        sendPushNotification(chatUserID, type == Type.text ? msg : 'image'));
   }
 // update read status of message
 
@@ -230,25 +245,26 @@ static Future<void>getFirebaseMessageToken()async{
         .doc(message.sent)
         .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
   }
-  
+
   // get only last message of a specific chat
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(ChatUser user){
-     return firestore
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
+      ChatUser user) {
+    return firestore
         .collection('chats/${getConversationalID(user.id)}/messages/')
-        .orderBy('sent',descending: true)
+        .orderBy('sent', descending: true)
         .limit(1)
         .snapshots();
-}
+  }
 
 // send chat image
-  static Future<void> sendChatImage(ChatUser chatUser,File file)async {
+  static Future<void> sendChatImage(ChatUser chatUser, File file) async {
     // getting file extension
     final ext = file.path.split('.').last;
     print('extension ${ext}');
 
     // storage file red with path
-    final ref =
-    firebaseStorage.ref().child('images/${getConversationalID(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.${ext}');
+    final ref = firebaseStorage.ref().child(
+        'images/${getConversationalID(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.${ext}');
     //uploading image
     await ref
         .putFile(file, SettableMetadata(contentType: 'image/$ext'))
@@ -258,7 +274,5 @@ static Future<void>getFirebaseMessageToken()async{
     // updating image in firestore database
     final imageURL = await ref.getDownloadURL();
     await sendMessage(chatUser, imageURL, Type.image);
-    }
-
-
+  }
 }

@@ -1,6 +1,8 @@
 import 'package:flash_chat_flutter_with_firebase/screens/home_page.dart';
 // import 'package:flash_chat_flutter_with_firebase/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 // import 'package:flutter/services.dart';
 // import 'package:lottie/lottie.dart';
 import 'api/apis.dart';
@@ -20,6 +22,7 @@ class _SplashState extends State<Splash> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     _navigateToNextPage();
   }
 
@@ -30,17 +33,24 @@ class _SplashState extends State<Splash> {
     //  const SystemUiOverlayStyle(systemNavigationBarColor: Colors.white, statusBarColor: Colors.white),
     // );
 
-    if((await APIs.auth.currentUser !=null)){
 
-      Navigator.pushReplacementNamed(context,HomePage.id);
+    final hasInternet = await InternetConnectivity().hasInternetConnection;
+    if (hasInternet) {
+      //You are connected to the internet
+      if((await APIs.auth.currentUser !=null)){
 
+        Navigator.pushReplacementNamed(context,HomePage.id);
+      }else
+      {
+        // Navigator.pushNamed(context, WelcomePage.id);
+        Navigator.pushReplacementNamed(context, WelcomePage.id);
+      }
 
-    }else
-    {
-     // Navigator.pushNamed(context, WelcomePage.id);
+    } else {
+      //"No internet connection
       Navigator.pushReplacementNamed(context, WelcomePage.id);
-
     }
+
 
 
 
@@ -51,15 +61,13 @@ class _SplashState extends State<Splash> {
     return Scaffold(
       backgroundColor: Color(0xffFFFFFF),
       body: Center(
-        child: Text('Lottie Animation'),
-        // child:
-        // Lottie.network(
-        //   'https://assets2.lottiefiles.com/packages/lf20_y1IkYhWHoQ.json',
-        //   repeat: true,
-        //
-        //  // fit: BoxFit.fill,
-        //   animate: true,
-        // ),
+        //child: Text('Lottie Animation'),
+        child: Lottie.network(
+          'https://assets8.lottiefiles.com/packages/lf20_gbfwtkzw.json',
+          repeat: true,
+         // fit: BoxFit.fill,
+          animate: true,
+        ),
 
       ),
     );

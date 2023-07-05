@@ -1,15 +1,15 @@
 // import 'package:flash_chat_flutter_with_firebase/main.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat_flutter_with_firebase/helper/dialogs.dart';
 import 'package:flash_chat_flutter_with_firebase/screens/profile_screen.dart';
-import 'package:flash_chat_flutter_with_firebase/screens/welcome_page.dart';
 import 'package:flash_chat_flutter_with_firebase/widgets/chat_user_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../api/apis.dart';
+import '../main.dart';
 import '../models/chat_user.dart';
 
 class HomePage extends StatefulWidget {
@@ -62,8 +62,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    MediaQueryData mediaQuery = MediaQuery.of(context);
-
+    mq = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: WillPopScope(
@@ -139,14 +138,8 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                await APIs.auth.signOut();
-                await GoogleSignIn().signOut();
-                print('sign-out');
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => WelcomePage()),
-                );
+              onPressed: () {
+                _showMessageUpdateDialog();
               },
               child: Icon(
                 CupertinoIcons.person_add,
@@ -206,4 +199,75 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  // add chat user dialog
+  void _showMessageUpdateDialog() {
+    String email = '';
+
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          contentPadding: const EdgeInsets.only(
+              left: 24, right: 24, top: 20, bottom: 10),
+
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20)),
+
+          //title
+          title: Row(
+            children: const [
+              Icon(
+                Icons.person,
+                color: Colors.blue,
+                size: 28,
+              ),
+              Text('Add User')
+            ],
+          ),
+
+          //content
+          content: TextFormField(
+            maxLines: null,
+            onChanged: (value) => email = value,
+            decoration: InputDecoration(
+              hintText: 'Add Email',
+              prefixIcon: Icon(Icons.email),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15))),
+          ),
+
+          //actions
+          actions: [
+            //cancel button
+            MaterialButton(
+                onPressed: () {
+                  //hide alert dialog
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.blue, fontSize: 16),
+                )),
+
+            //Add button
+            MaterialButton(
+                onPressed: () async {
+                  //hide alert dialog
+                  Navigator.pop(context);
+                 if(email.isNotEmpty){
+                  await APIs.addChatUser(email).then((value){
+                    if(!value){
+                      Dialogs.showSnackbar(context,'User does not exist');
+                    }
+                  });
+                 }
+                },
+                child: const Text(
+                  'Add',
+                  style: TextStyle(color: Colors.blue, fontSize: 16),
+                ))
+          ],
+        ));
+  }
 }
+
